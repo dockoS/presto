@@ -19,7 +19,7 @@ from openmapflow.ee_boundingbox import EEBoundingBox
 from shapely import geometry
 from tqdm import tqdm
 
-from .. import utils
+from .. import utils2
 from .masking import MaskedExample, MaskParams
 from .pipelines.dynamicworld import DynamicWorldMonthly2020_2021, pad_array
 from .pipelines.ee_pipeline import EE_BUCKET, NPY_BUCKET, EEPipeline
@@ -263,7 +263,7 @@ class Dataset:
             wds.SimpleShardList(
                 f"pipe:gcloud storage cat {url}" if url.startswith("gs://") else url
             ),
-            wds.cached_tarfile_to_samples(cache_dir=f"{utils.data_dir}/tars/{Path(url).stem}"),
+            wds.cached_tarfile_to_samples(cache_dir=f"{utils2.data_dir}/tars/{Path(url).stem}"),
         ]
 
         if shuffle:
@@ -309,7 +309,7 @@ class S1_S2_ERA5_SRTM_DynamicWorld_WorldCover_2020_2021(Dataset):
 
         class_df = pd.read_csv(f"https://storage.googleapis.com/{TAR_BUCKET}/esa_grid.csv")
         class_df = class_df.drop(["geometry"], axis=1)
-        esa_grid = gpd.read_file(utils.data_dir / "esa_worldcover_2020_grid.geojson")
+        esa_grid = gpd.read_file(utils2.data_dir / "esa_worldcover_2020_grid.geojson")
         df = esa_grid.merge(class_df, on="ll_tile", how="left")
 
         tar_stats = {}
@@ -344,7 +344,7 @@ class S1_S2_ERA5_SRTM_DynamicWorld_WorldCover_2020_2021(Dataset):
 
     def create_webdataset_tars(self, tiles: List[str]):
         logger.info("Loading tile geometries")
-        df = gpd.read_file(utils.data_dir / "esa_worldcover_2020_grid.geojson")
+        df = gpd.read_file(utils2.data_dir / "esa_worldcover_2020_grid.geojson")
 
         text = ""
         for tile in tiles:
@@ -354,11 +354,11 @@ class S1_S2_ERA5_SRTM_DynamicWorld_WorldCover_2020_2021(Dataset):
                 polygon=geom_series.iloc[0], prefix=tile
             )
 
-        with open(utils.data_dir / "tile_processing.txt", "w") as f:
+        with open(utils2.data_dir / "tile_processing.txt", "w") as f:
             f.write(text)
 
         tile_stats = self._generate_stats()
-        with open(utils.data_dir / "tile_stats.yaml", "w") as yaml_file:
+        with open(utils2.data_dir / "tile_stats.yaml", "w") as yaml_file:
             yaml.dump(tile_stats, yaml_file, default_flow_style=False)
 
     def _tuples_from_decoded_files(self, iter: Iterable[Dict[str, np.ndarray]]) -> Iterable[Tuple]:
@@ -402,13 +402,13 @@ class S1_S2_ERA5_SRTM_DynamicWorldMonthly_2020_2021(Dataset):
 
     def create_webdataset_tars(self, shard_ids: List[int] = [0]):
         logger.info("Loading Dynamic World geometries")
-        gdf = gpd.read_file(utils.data_dir / "dynamic_world_samples.geojson")
+        gdf = gpd.read_file(utils2.data_dir / "dynamic_world_samples.geojson")
 
         if "shard" not in gdf.columns:
             np.random.seed(0)
             n_shards = len(gdf) // N_RECORDS_IN_SHARD
             gdf["shard"] = np.random.choice(a=n_shards, size=len(gdf), replace=True)
-            gdf.to_file(utils.data_dir / "dynamic_world_samples.geojson", driver="GeoJSON")
+            gdf.to_file(utils2.data_dir / "dynamic_world_samples.geojson", driver="GeoJSON")
 
         text = ""
         for i in shard_ids:
@@ -421,14 +421,14 @@ class S1_S2_ERA5_SRTM_DynamicWorldMonthly_2020_2021(Dataset):
             )
 
         logger.info("Saving logs and geojson")
-        with open(utils.data_dir / "shard_processing.txt", "w") as f:
+        with open(utils2.data_dir / "shard_processing.txt", "w") as f:
             f.write(text)
 
         active_shards = gdf[gdf["shard"].isin(shard_ids)].copy()
 
         active_shards["geometry"] = active_shards.to_crs("+proj=cea").centroid.to_crs(gdf.crs)
         active_shards.to_file(
-            utils.data_dir / "dynamic_world_samples_active_shards.geojson", driver="GeoJSON"
+            utils2.data_dir / "dynamic_world_samples_active_shards.geojson", driver="GeoJSON"
         )
 
     def _tuples_from_decoded_files(self, iter: Iterable[Dict[str, np.ndarray]]) -> Iterable[Tuple]:

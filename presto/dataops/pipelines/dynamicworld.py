@@ -137,3 +137,34 @@ class DynamicWorldMonthly2020_2021(DynamicWorld2020_2021):
             current_date = next_date
 
         return ee.Image.cat(output_images)
+
+if __name__ == "__main__":
+
+    polygon=ee.Geometry.Polygon([
+            [
+              -16.306974433441354,
+              13.878555458985602
+            ],
+            [
+              -16.353633535066393,
+              13.829769001829163
+            ],
+            [
+              -16.245958685162776,
+              13.829769001829163
+            ],
+            [
+              -16.245958685162776,
+              13.904686841984812
+            ],
+            [
+              -16.306974433441354,
+              13.878555458985602
+            ]
+          ])
+    dw = DynamicWorldMonthly2020_2021()
+    print(image = dw.create_ee_image(polygon))
+    
+
+
+
