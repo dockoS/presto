@@ -162,7 +162,7 @@ class Mosaiks1d(nn.Module):
         # ensures the model works seamlessly with the eval tasks
         return self(x)
 
-data_dir = "/Users/maika/Desktop/presto/data"
+data_dir = "../../data"
 import os
 default_model_path = os.path.join(data_dir , "default_model.pt")
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
