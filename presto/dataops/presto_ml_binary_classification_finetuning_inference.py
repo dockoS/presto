@@ -606,12 +606,12 @@ def infer_file(id,data_dir,rf_model,xgb_model):
     with rasterio.open(os.path.join(data_dir_inference,f'{id}_rf_prediction.tif'), 'w', **metadata) as dst:
         dst.write(label_predicted_rf, 1)
     
-    blob_name_rf=os.path.join(bucket_repository,data_path.split("/")[-1]+"-inference",f'{id}_rf_prediction.tif')
+    blob_name_rf=os.path.join(bucket_repository,data_dir_inference.split("/")[-1]+"-inference",f'{id}_rf_prediction.tif')
     upload_to_gcs(os.path.join(data_dir_inference,f'{id}_rf_prediction.tif'),blob_name_rf)
 
     with rasterio.open(os.path.join(data_dir_inference,f'{id}_xgb_prediction.tif'), 'w', **metadata) as dst:
         dst.write(label_predicted_xgb, 1)
-    blob_name_xgb=os.path.join(bucket_repository,data_path.split("/")[-1]+"-inference",f'{id}_xgb_prediction.tif')
+    blob_name_xgb=os.path.join(bucket_repository,data_dir_inference.split("/")[-1]+"-inference",f'{id}_xgb_prediction.tif')
     upload_to_gcs(os.path.join(data_dir_inference,f'{id}_xgb_prediction.tif'),blob_name_xgb)
 
 if __name__ == "__main__":
@@ -644,8 +644,8 @@ if __name__ == "__main__":
 
 
 
-    rf_model = pickle.load(open('rf_model.pkl', 'rb'))
-    xgb_model = pickle.load(open('xgb_model.pkl', 'rb'))
+    rf_model = pickle.load(open('rf_model_arachide_mil_mais_others.pkl', 'rb'))
+    xgb_model = pickle.load(open('/Users/maika/Desktop/presto/presto/dataops/xgb_model_arachid_mil_mais_others.pkl', 'rb'))
     data_dir_inference=data_dir+"-inference"
     os.makedirs(data_dir_inference, exist_ok=True)
     print(f"bucket_repository: {bucket_repository}")

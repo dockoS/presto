@@ -303,7 +303,7 @@ def process_all_ids(ids,data_dir):
 
 
 def main(train_features_path,train_labels_path,test_features_path,test_labels_path):
-    label_mapping={12:0,10:1,11:2,17:2,15:2,14:2,17:2,23:2,7:3}
+    label_mapping={12:0,10:1,11:2,17:3,15:3,14:3,17:3,23:3,7:3}
     #label_mapping={12:0,10:1,11:1,17:1,15:1,14:1,17:1,23:1,7:2}
 
     
@@ -397,8 +397,8 @@ def main(train_features_path,train_labels_path,test_features_path,test_labels_pa
 
 
     # save the model to disk
-    pickle.dump(rf_grid.best_estimator_, open('rf_model.pkl', 'wb'))
-    pickle.dump(xgb_grid.best_estimator_, open('xgb_model.pkl', 'wb'))
+    pickle.dump(rf_grid.best_estimator_, open('rf_model_arachide_mil_mais_others.pkl', 'wb'))
+    pickle.dump(xgb_grid.best_estimator_, open('xgb_model_arachid_mil_mais_others.pkl', 'wb'))
     return rf_grid.best_estimator_,xgb_grid.best_estimator_,results
 
 
@@ -602,10 +602,10 @@ if __name__ == "__main__":
 
 
 
-    #rf_model,xgb_model, result=main(train_features_path,train_labels_path,test_features_path,test_labels_path)
+    rf_model,xgb_model, result=main(train_features_path,train_labels_path,test_features_path,test_labels_path)
      # open the file and read the ids
-    rf_model = pickle.load(open('rf_model.pkl', 'rb'))
-    xgb_model = pickle.load(open('xgb_model.pkl', 'rb'))
+    #rf_model = pickle.load(open('rf_model.pkl', 'rb'))
+    #xgb_model = pickle.load(open('xgb_model.pkl', 'rb'))
     with open('/Users/maika/Desktop/presto/presto/dataops/data/bassin_arachidier_133_data_new_label_mapped/test.txt', 'r') as f:
         train_ids = [line.strip() for line in f]
     for id in train_ids:
