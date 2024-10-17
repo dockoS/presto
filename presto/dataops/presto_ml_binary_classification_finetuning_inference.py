@@ -543,7 +543,7 @@ def infer_file(id,data_dir,rf_model,xgb_model):
     ff_path=list((data_dir).glob(f"{id}_S2_*.tif"))[0]
     _,h,w=rioxarray.open_rasterio(ff_path).shape
     
-    arrays, masks, dynamic_worlds, latlons=process_id_inference_parallel(id,data_dir,num_workers=4)
+    arrays, masks, dynamic_worlds, latlons=process_id_inference(id,data_dir)
     month = torch.tensor([6] * len(arrays)).long()
 
     dl = DataLoader(
