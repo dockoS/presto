@@ -645,7 +645,7 @@ if __name__ == "__main__":
 
 
     rf_model = pickle.load(open('rf_model_arachide_mil_mais_others.pkl', 'rb'))
-    xgb_model = pickle.load(open('/Users/maika/Desktop/presto/presto/dataops/xgb_model_arachid_mil_mais_others.pkl', 'rb'))
+    xgb_model = pickle.load(open('xgb_model_arachid_mil_mais_others.pkl', 'rb'))
     data_dir_inference=data_dir+"-inference"
     os.makedirs(data_dir_inference, exist_ok=True)
     print(f"bucket_repository: {bucket_repository}")
