@@ -651,8 +651,36 @@ if __name__ == "__main__":
     print(f"data_path: {data_path}")
     #ad tqdm
  
-    for i,id in enumerate(ids):
-        logger.success(f"processing id : {id}: {i+1}/{len(ids)}")
-        infer_file(id,Path(data_dir),rf_model,xgb_model)
+    # for i,id in enumerate(ids):
+    #     logger.success(f"processing id : {id}: {i+1}/{len(ids)}")
+    #     infer_file(id,Path(data_dir),rf_model,xgb_model)
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    import logging
+    from pathlib import Path
+
+    # Assuming you have already configured logger elsewhere in your code
+    logger = logging.getLogger(__name__)
+
+    def process_id(id, data_dir, rf_model, xgb_model):
+        logger.info(f"Starting processing id: {id}")
+        infer_file(id, Path(data_dir), rf_model, xgb_model)
+        logger.info(f"Completed processing id: {id}")
+
+    # Parameters
+
+   
+  # Replace with your actual ids
+
+    # Running in parallel using ThreadPoolExecutor
+    with ThreadPoolExecutor() as executor:
+        future_to_id = {executor.submit(process_id, id, data_dir, rf_model, xgb_model): id for id in ids}
+        
+        for i, future in enumerate(as_completed(future_to_id), 1):
+            id = future_to_id[future]
+            try:
+                future.result()
+                logger.success(f"Successfully processed id: {id}: {i}/{len(ids)}")
+            except Exception as e:
+                logger.error(f"Failed to process id: {id}: {e}")
 
 
