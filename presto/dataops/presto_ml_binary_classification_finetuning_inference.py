@@ -595,6 +595,7 @@ def infer_file(id,data_dir,rf_model,xgb_model):
     # open the original file to get its metadata
     with rasterio.open(ff_path) as src:
         metadata = src.meta
+    metadata.update(count=1)
 
     # reshape the predicted labels
     label_predicted_rf = np.array(label_predicted_rf).reshape(h, w)
@@ -661,10 +662,10 @@ if __name__ == "__main__":
     # Assuming you have already configured logger elsewhere in your code
     logger = logging.getLogger(__name__)
 
-    def process_id(id, data_dir, rf_model, xgb_model):
-        logger.info(f"Starting processing id: {id}")
-        infer_file(id, Path(data_dir), rf_model, xgb_model)
-        logger.info(f"Completed processing id: {id}")
+    # def process_id(id, data_dir, rf_model, xgb_model):
+    #     logger.info(f"Starting processing id: {id}")
+    #     infer_file(id, Path(data_dir), rf_model, xgb_model)
+    #     logger.info(f"Completed processing id: {id}")
 
     # Parameters
 
@@ -673,7 +674,7 @@ if __name__ == "__main__":
 
     # Running in parallel using ThreadPoolExecutor
     with ThreadPoolExecutor() as executor:
-        future_to_id = {executor.submit(process_id, id, data_dir, rf_model, xgb_model): id for id in ids}
+        future_to_id = {executor.submit(infer_file, id, Path(data_dir), rf_model, xgb_model): id for id in ids}
         
         for i, future in enumerate(as_completed(future_to_id), 1):
             id = future_to_id[future]
