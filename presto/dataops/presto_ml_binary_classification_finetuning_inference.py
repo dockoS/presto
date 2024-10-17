@@ -253,17 +253,21 @@ def process_id_inference(id,data_dir):
     arrays, masks, dynamic_worlds, latlons, labels= [], [], [], [], []
     if len(ff_path)!=4:
         return arrays, masks, dynamic_worlds, latlons, labels
-    k=0
+
+    total_pixels = h * w
+    progress_bar = tqdm(total=total_pixels)
     for i in range(h):
         for j in range(w):
-            print(f"processing pixel : {k+1}/{h*w}") 
+
             x, mask, dynamic_world,latlon=process_pixel_for_all_sensors_inference(id,i,j,data_dir)
             arrays.append(x)
             masks.append(mask)
             dynamic_worlds.append(dynamic_world)
             latlons.append(latlon)
+            progress_bar.update()
             
-            k+=1
+
+    progress_bar.close()
       
     return arrays, masks, dynamic_worlds, latlons
 def process_all_ids(ids,data_dir):
@@ -645,8 +649,10 @@ if __name__ == "__main__":
     os.makedirs(data_dir_inference, exist_ok=True)
     print(f"bucket_repository: {bucket_repository}")
     print(f"data_path: {data_path}")
-
-    for id in ids:
+    #ad tqdm
+ 
+    for i,id in enumerate(ids):
+        logger.success(f"processing id : {id}: {i+1}/{len(ids)}")
         infer_file(id,Path(data_dir),rf_model,xgb_model)
 
 
