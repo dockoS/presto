@@ -508,7 +508,7 @@ import os
 
 def process_pixel_wrapper(args):
     return process_pixel_for_all_sensors_inference(*args)
-
+import torch.multiprocessing as mp
 def process_id_inference_parallel(id, data_dir, num_workers=None):
     ff_path = list((data_dir).glob(f"{id}_S2_*.tif"))
 
@@ -523,7 +523,7 @@ def process_id_inference_parallel(id, data_dir, num_workers=None):
     tasks = [(id, i, j, data_dir) for i in range(h) for j in range(w)]
     
     # Use multiprocessing to speed up the pixel processing
-    with multiprocessing.Pool(processes=num_workers) as pool:
+    with mp.Pool(processes=num_workers) as pool:
         #results = pool.map(process_pixel_wrapper, tasks)
         results = list(tqdm(pool.imap(process_pixel_wrapper, tasks), total=len(tasks)))
     # Unpack results and maintain the order
@@ -610,6 +610,7 @@ def infer_file(id,data_dir,rf_model,xgb_model):
     upload_to_gcs(os.path.join(data_dir_inference,f'{id}_xgb_prediction.tif'),blob_name_xgb)
 
 if __name__ == "__main__":
+    mp.set_start_method('spawn')
     load_dotenv()
     import pickle
     storage_client = storage.Client()
